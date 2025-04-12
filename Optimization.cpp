@@ -1,12 +1,3 @@
-// Univeristy File
-
-#include "pch.h"
-
-#include "opt_alg.h"
-#include "solution.h"
-
-#include "FileSaver.h"
-
 solution MC(matrix(*ff)(matrix, matrix, matrix), int N, matrix lb, matrix ub, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try
@@ -557,7 +548,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 #if 1
 	try
 	{
-		//Funkcja pomocnicza do znajdywania maksymum normy
 		auto max = [&](std::vector<solution> sim, int i_min) -> double
 			{
 				double result = 0.0;
@@ -572,12 +562,10 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 
 		int n = get_len(x0);
 
-		//Tworzenie bazy ortogonalnej
 		matrix d = matrix(n, n);
 		for (int i = 0; i < n; ++i)
 			d(i, i) = 1.0;
 
-		//Tworzenie simplexu i uzupe?nianie go danymi
 		std::vector<solution> simplex;
 		simplex.resize(n + 1);
 		simplex[0].x = x0;
@@ -588,14 +576,11 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			simplex[i].fit_fun(ff, ud1, ud2);
 		}
 
-		//Indeks najmniejszej warto?ci wierzcho?ka simplexu
 		int i_min{};
-		//Indeks najwi?kszej warto?ci wierzcho?ka simplexu
 		int i_max{};
 
 		while (max(simplex, i_min) >= epsilon)
 		{
-			//Wyznaczanie maksymalnego i minimalnego indeksu
 			i_min = 0;
 			i_max = 0;
 			for (int i = 1; i < simplex.size(); ++i)
@@ -606,7 +591,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 					i_max = i;
 			}
 
-			//Wyznaczenie ?rodka ci??ko?ci
 			matrix simplex_CoG{};
 			for (int i = 0; i < simplex.size(); ++i)
 			{
@@ -616,14 +600,12 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 			}
 			simplex_CoG = simplex_CoG / simplex.size();
 
-			//Obliczanie warto?ci funkcji odbitego simplexu
 			solution simplex_reflected{};
 			simplex_reflected.x = simplex_CoG + alpha * (simplex_CoG - simplex[i_max].x);
 			simplex_reflected.fit_fun(ff, ud1, ud2);
 
 			if (simplex_reflected.y < simplex[i_min].y)
 			{
-				//Obliczanie warto?ci funkcji powi?kszonego simplexu
 				solution simplex_expansion{};
 				simplex_expansion.x = simplex_CoG + gamma * (simplex_reflected.x - simplex_CoG);
 				simplex_expansion.fit_fun(ff, ud1, ud2);
@@ -638,7 +620,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 					simplex[i_max] = simplex_reflected;
 				else
 				{
-					//Obliczanie warto?ci funkcji pomniejszonego simplexu
 					solution simplex_narrowed{};
 					simplex_narrowed.x = simplex_CoG + beta * (simplex[i_max].x - simplex_CoG);
 					simplex_narrowed.fit_fun(ff, ud1, ud2);
@@ -710,11 +691,9 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 
 		do
 		{
-			// POLECENIE: oblicz wartosci funkcji w wierzcholkach sympleksu p0 p1 .. pn
 			for (int i = 0; i < n; i++)
 				p[i].fit_fun(ff, ud1, ud2);
 
-			// POLECENIE: wyznacz p_min i p_max (min =/= max)
 			min_index = 0;
 			max_index = 0;
 
@@ -726,8 +705,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 				if (p[i].y < p[min_index].y)
 					min_index = i;
 			}
-
-			// KONIEC POLECENIE
 
 			for (int i = 0; i < n; i++)
 				if (i != max_index)
@@ -802,7 +779,6 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 #endif
 }
 
-// Gradient prosty
 solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try
@@ -853,7 +829,6 @@ solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	}
 }
 
-// Gradient sprzezony
 solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try
@@ -908,7 +883,6 @@ solution CG(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, mat
 	}
 }
 
-// Gradient z Hesjanem
 solution Newton(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix),
 	matrix(*Hf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
@@ -1066,20 +1040,5 @@ solution Powell(matrix(*ff)(matrix, matrix, matrix), matrix x0, double epsilon, 
 	catch (string ex_info)
 	{
 		throw("solution Powell(...):\n" + ex_info);
-	}
-}
-
-solution EA(matrix(*ff)(matrix, matrix, matrix), int N, matrix lb, matrix ub, int mi, int lambda, matrix sigma0, double epsilon, int Nmax, matrix ud1, matrix ud2)
-{
-	try
-	{
-		solution Xopt;
-		// Tu wpisz kod funkcji
-
-		return Xopt;
-	}
-	catch (string ex_info)
-	{
-		throw("solution EA(...):\n" + ex_info);
 	}
 }
