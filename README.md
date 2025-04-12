@@ -14,3 +14,5 @@ The methods contained in the file:
 - Newton method
 - golden ratio method
 - Powell's method
+
+The remaining files also contain other valuable numerical methods.
