@@ -1,33 +1,3 @@
-solution MC(matrix(*ff)(matrix, matrix, matrix), int N, matrix lb, matrix ub, double epsilon, int Nmax, matrix ud1, matrix ud2)
-{
-	try
-	{
-		solution Xopt;
-		while (true)
-		{
-			Xopt = rand_mat(N);
-			for (int i = 0; i < N; ++i)
-				Xopt.x(i) = (ub(i) - lb(i)) * Xopt.x(i) + lb(i);
-			Xopt.fit_fun(ff, ud1, ud2);
-			if (Xopt.y < epsilon)
-			{
-				Xopt.flag = 1;
-				break;
-			}
-			if (solution::f_calls > Nmax)
-			{
-				Xopt.flag = 0;
-				break;
-			}
-		}
-		return Xopt;
-	}
-	catch (string ex_info)
-	{
-		throw("solution MC(...):\n" + ex_info);
-	}
-}
-
 double* expansion(matrix(*ff)(matrix, matrix, matrix), double x0, double d, double alpha, int Nmax, matrix ud1, matrix ud2)
 {
 	try
